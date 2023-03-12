@@ -1,0 +1,100 @@
+from machine import Pin
+from ir_rx.nec import NEC_16
+ 
+def forward():
+    #wheel set A forward
+    in1.value(1)
+    in2.value(0)
+    
+    #wheel set B forward
+    in3.value(1)
+    in4.value(0)
+    
+def backward():
+    #wheel set A backward
+    in1.value(0)
+    in2.value(1)
+    
+    #wheel set B backward
+    in3.value(0)
+    in4.value(1)
+    
+def stop():
+    #wheel set A stop
+    in1.value(0)
+    in2.value(0)
+    
+    #wheel set B stop
+    in3.value(0)
+    in4.value(0)
+    
+def rotate_clockwise():
+    #wheel set A forward
+    in1.value(1)
+    in2.value(0)
+    
+    #wheel set B backward
+    in3.value(0)
+    in4.value(1)
+    
+def rotate_counter_clockwise():
+    #wheel set A backward
+    in1.value(0)
+    in2.value(1)
+    
+    #wheel set B forward
+    in3.value(1)
+    in4.value(0)
+       
+def callback(data, addr, ctrl):
+    if data > 0:  # NEC protocol sends repeat codes.
+        #print('Data {:02x} Addr {:04x}'.format(data, addr))
+        #print(ir_key[data])
+        pushed_button = ir_key[data]
+
+        if pushed_button == '1':
+            forward()
+            
+        if pushed_button == '2':
+            stop()
+            
+        if pushed_button == '3':
+            backward()
+            
+        if pushed_button == '4':
+            rotate_clockwise()
+            
+        if pushed_button == '6':
+            rotate_counter_clockwise()
+            
+ir_key = {
+    0x45: 'CH-',
+    0x46: 'CH',
+    0x47: 'CH+',
+    0x44: 'PREVIOUS',
+    0x40: 'NEXT',
+    0x43: 'PLAY/PAUSE',
+    0x07: 'VOL-',
+    0x15: 'VOL+',
+    0x09: 'EQ',
+    0x16: '0',
+    0x19: '100+',
+    0x0D: '200+',
+    0x0C: '1',
+    0x18: '2',
+    0x5E: '3',
+    0x08: '4',
+    0x1C: '5',
+    0x5A: '6',
+    0x42: '7',
+    0x52: '8',
+    0x4A: '9'    
+    }
+            
+sensor = NEC_16(Pin(15, Pin.IN), callback)
+
+in1 = Pin(17,Pin.OUT)
+in2 = Pin(16,Pin.OUT)
+
+in3 = Pin(2,Pin.OUT)
+in4 = Pin(3,Pin.OUT)
